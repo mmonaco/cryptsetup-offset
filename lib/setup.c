@@ -1344,8 +1344,10 @@ out:
 int crypt_keyslot_add_by_keyfile(struct crypt_device *cd,
 	int keyslot,
 	const char *keyfile,
+	size_t keyfile_offset,
 	size_t keyfile_size,
 	const char *new_keyfile,
+	size_t new_keyfile_offset,
 	size_t new_keyfile_size)
 {
 	struct volume_key *vk = NULL;

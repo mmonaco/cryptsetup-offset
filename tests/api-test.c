@@ -778,7 +778,7 @@ static void AddDevicePlain(void)
 	// crypt_keyslot_*()
 	FAIL_(crypt_keyslot_add_by_passphrase(cd,CRYPT_ANY_SLOT,passphrase,strlen(passphrase),passphrase,strlen(passphrase)), "can't add keyslot to plain device");
 	FAIL_(crypt_keyslot_add_by_volume_key(cd,CRYPT_ANY_SLOT	,key,key_size,passphrase,strlen(passphrase)),"can't add keyslot to plain device");
-	FAIL_(crypt_keyslot_add_by_keyfile(cd,CRYPT_ANY_SLOT,KEYFILE1,strlen(KEY1),KEYFILE2,strlen(KEY2)),"can't add keyslot to plain device");
+	FAIL_(crypt_keyslot_add_by_keyfile(cd,CRYPT_ANY_SLOT,KEYFILE1,0,strlen(KEY1),KEYFILE2,0,strlen(KEY2)),"can't add keyslot to plain device");
 	FAIL_(crypt_keyslot_destroy(cd,1),"can't manipulate keyslots on plain device");
 	EQ_(crypt_keyslot_status(cd, 0), CRYPT_SLOT_INVALID);
 	_remove_keyfiles();
@@ -1074,7 +1074,7 @@ static void AddDeviceLuks(void)
 	EQ_(1, crypt_keyslot_add_by_volume_key(cd, 1, key, key_size, KEY1, strlen(KEY1)));
 	OK_(_prepare_keyfile(KEYFILE1, KEY1, strlen(KEY1)));
 	OK_(_prepare_keyfile(KEYFILE2, KEY2, strlen(KEY2)));
-	EQ_(2, crypt_keyslot_add_by_keyfile(cd, 2, KEYFILE1, 0, KEYFILE2, 0));
+	EQ_(2, crypt_keyslot_add_by_keyfile(cd, 2, KEYFILE1, 0, 0, KEYFILE2, 0, 0));
 	FAIL_(crypt_activate_by_keyfile(cd, CDEVICE_2, CRYPT_ANY_SLOT, KEYFILE2, 0, strlen(KEY2)-1, 0), "key mismatch");
 	EQ_(2, crypt_activate_by_keyfile(cd, NULL, CRYPT_ANY_SLOT, KEYFILE2, 0, 0, 0));
 	EQ_(2, crypt_activate_by_keyfile(cd, CDEVICE_2, CRYPT_ANY_SLOT, KEYFILE2, 0, 0, 0));

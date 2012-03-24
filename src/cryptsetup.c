@@ -826,8 +826,10 @@ static int action_luksAddKey(int arg __attribute__((unused)))
 						    key, keysize, NULL, 0);
 	} else if (opt_key_file || opt_new_key_file) {
 		r = crypt_keyslot_add_by_keyfile(cd, opt_key_slot,
-						 opt_key_file, opt_keyfile_size,
-						 opt_new_key_file, opt_new_keyfile_size);
+						 opt_key_file,
+						 opt_keyfile_offset, opt_keyfile_size,
+						 opt_new_key_file,
+						 opt_new_keyfile_offset, opt_new_keyfile_size);
 	} else {
 		r = crypt_keyslot_add_by_passphrase(cd, opt_key_slot,
 						    NULL, 0, NULL, 0);

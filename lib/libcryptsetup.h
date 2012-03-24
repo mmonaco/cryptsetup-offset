@@ -511,8 +511,10 @@ int crypt_keyslot_max(const char *type);
  * @param cd crypt device handle
  * @param keyslot requested keyslot or @e CRYPT_ANY_SLOT
  * @param keyfile key file used to unlock volume key, @e NULL for passphrase query
+ * @param keyfile_offset number of bytes to skip from start of keyfile
  * @param keyfile_size number of bytes to read from keyfile, @e 0 is unlimited
  * @param new_keyfile keyfile for new keyslot, @e NULL for passphrase query
+ * @param new_keyfile_offset number of bytes to skip from start of @e new_keyfile
  * @param new_keyfile_size number of bytes to read from @e new_keyfile, @e 0 is unlimited
  *
  * @return allocated key slot number or negative errno otherwise.
@@ -523,8 +525,10 @@ int crypt_keyslot_max(const char *type);
 int crypt_keyslot_add_by_keyfile(struct crypt_device *cd,
 	int keyslot,
 	const char *keyfile,
+	size_t keyfile_offset,
 	size_t keyfile_size,
 	const char *new_keyfile,
+	size_t new_keyfile_offset,
 	size_t new_keyfile_size);
 
 /**
