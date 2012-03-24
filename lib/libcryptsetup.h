@@ -445,6 +445,7 @@ int crypt_resume_by_passphrase(struct crypt_device *cd,
  * @param name name of device to resume
  * @param keyslot requested keyslot or CRYPT_ANY_SLOT
  * @param keyfile key file used to unlock volume key, @e NULL for passphrase query
+ * @param keyfile_offset number of bytes to skip from start of keyfile
  * @param keyfile_size number of bytes to read from keyfile, 0 is unlimited
  *
  * @return unlocked key slot number or negative errno otherwise.
@@ -453,6 +454,7 @@ int crypt_resume_by_keyfile(struct crypt_device *cd,
 			    const char *name,
 			    int keyslot,
 			    const char *keyfile,
+			    size_t keyfile_offset,
 			    size_t keyfile_size);
 
 /**

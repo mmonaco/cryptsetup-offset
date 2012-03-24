@@ -1079,7 +1079,8 @@ static int action_luksResume(int arg __attribute__((unused)))
 
 	if (opt_key_file)
 		r = crypt_resume_by_keyfile(cd, action_argv[0], CRYPT_ANY_SLOT,
-					    opt_key_file, opt_keyfile_size);
+					    opt_key_file, opt_keyfile_offset,
+					    opt_keyfile_size);
 	else
 		r = crypt_resume_by_passphrase(cd, action_argv[0], CRYPT_ANY_SLOT,
 					       NULL, 0);

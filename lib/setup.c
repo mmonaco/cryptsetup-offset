@@ -1218,6 +1218,7 @@ int crypt_resume_by_keyfile(struct crypt_device *cd,
 			    const char *name,
 			    int keyslot,
 			    const char *keyfile,
+			    size_t keyfile_offset,
 			    size_t keyfile_size)
 {
 	struct volume_key *vk = NULL;
