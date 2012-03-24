@@ -338,7 +338,8 @@ static int action_create(int arg __attribute__((unused)))
 			activate_flags);
 	else {
 		r = crypt_get_key(_("Enter passphrase: "),
-				  &password, &passwordLen, opt_keyfile_size,
+				  &password, &passwordLen,
+				  opt_keyfile_offset, opt_keyfile_size,
 				  NULL, opt_timeout,
 				  _verify_passphrase(0),
 				  cd);
@@ -566,8 +567,8 @@ static int action_luksFormat(int arg __attribute__((unused)))
 		crypt_set_rng_type(cd, CRYPT_RNG_URANDOM);
 
 	r = crypt_get_key(_("Enter LUKS passphrase: "), &password, &passwordLen,
-			  opt_keyfile_size, opt_key_file, opt_timeout,
-			  _verify_passphrase(1), cd);
+			  opt_keyfile_offset, opt_keyfile_size, opt_key_file,
+			  opt_timeout, _verify_passphrase(1), cd);
 	if (r < 0)
 		goto out;
 
@@ -661,7 +662,8 @@ out:
 
 static int verify_keyslot(struct crypt_device *cd, int key_slot,
 			  char *msg_last, char *msg_pass,
-			  const char *key_file, int keyfile_size)
+			  const char *key_file, int keyfile_offset,
+			  int keyfile_size)
 {
 	crypt_keyslot_info ki;
 	char *password = NULL;
@@ -673,7 +675,7 @@ static int verify_keyslot(struct crypt_device *cd, int key_slot,
 		return -EPERM;
 
 	r = crypt_get_key(msg_pass, &password, &passwordLen,
-			  keyfile_size, key_file, opt_timeout,
+			  keyfile_offset, keyfile_size, key_file, opt_timeout,
 			  _verify_passphrase(0), cd);
 	if(r < 0)
 		goto out;
@@ -733,7 +735,7 @@ static int action_luksKillSlot(int arg __attribute__((unused)))
 		r = verify_keyslot(cd, opt_key_slot,
 			_("This is the last keyslot. Device will become unusable after purging this key."),
 			_("Enter any remaining LUKS passphrase: "),
-			opt_key_file, opt_keyfile_size);
+			opt_key_file, opt_keyfile_offset, opt_keyfile_size);
 		if (r < 0)
 			goto out;
 	}
@@ -762,7 +764,7 @@ static int action_luksRemoveKey(int arg __attribute__((unused)))
 
 	r = crypt_get_key(_("Enter LUKS passphrase to be deleted: "),
 		      &password, &passwordLen,
-		      opt_keyfile_size, opt_key_file,
+		      opt_keyfile_offset, opt_keyfile_size, opt_key_file,
 		      opt_timeout,
 		      _verify_passphrase(0),
 		      cd);
@@ -865,8 +867,8 @@ static int action_luksChangeKey(int arg __attribute__((unused)))
 
 	r = crypt_get_key(_("Enter LUKS passphrase to be changed: "),
 		      &password, &passwordLen,
-		      opt_keyfile_size, opt_key_file, opt_timeout,
-		      _verify_passphrase(0), cd);
+		      opt_keyfile_offset, opt_keyfile_size, opt_key_file,
+		      opt_timeout, _verify_passphrase(0), cd);
 	if (r < 0)
 		goto out;
 
@@ -902,7 +904,8 @@ static int action_luksChangeKey(int arg __attribute__((unused)))
 	passwordLen = 0;
 	r = crypt_get_key(_("Enter new LUKS passphrase: "),
 			  &password, &passwordLen,
-			  opt_new_keyfile_size, opt_new_key_file,
+			  opt_new_keyfile_offset, opt_new_keyfile_size,
+			  opt_new_key_file,
 			  opt_timeout, _verify_passphrase(0), cd);
 	if (r < 0)
 		goto out;
@@ -995,7 +998,8 @@ static int luksDump_with_volume_key(struct crypt_device *cd)
 		return -ENOMEM;
 
 	r = crypt_get_key(_("Enter LUKS passphrase: "), &password, &passwordLen,
-			  opt_keyfile_size, opt_key_file, opt_timeout, 0, cd);
+			  opt_keyfile_offset, opt_keyfile_size, opt_key_file,
+			  opt_timeout, 0, cd);
 	if (r < 0)
 		goto out;
 

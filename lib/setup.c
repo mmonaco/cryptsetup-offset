@@ -358,7 +358,7 @@ static int key_from_terminal(struct crypt_device *cd, char *msg, char **key,
 		} else
 			*key_len = r;
 	} else
-		r = crypt_get_key(msg, key, key_len, 0, NULL, cd->timeout,
+		r = crypt_get_key(msg, key, key_len, 0, 0, NULL, cd->timeout,
 				  (force_verify || cd->password_verify), cd);
 out:
 	free(prompt);
@@ -410,7 +410,7 @@ static int key_from_file(struct crypt_device *cd, char *msg,
 			  char **key, size_t *key_len,
 			  const char *key_file, size_t key_size)
 {
-	return crypt_get_key(msg, key, key_len, key_size, key_file,
+	return crypt_get_key(msg, key, key_len, 0, key_size, key_file,
 			     cd->timeout, 0, cd);
 }
 

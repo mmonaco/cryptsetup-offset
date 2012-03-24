@@ -257,8 +257,8 @@ out_err:
  */
 int crypt_get_key(const char *prompt,
 		  char **key, size_t *key_size,
-		  size_t keyfile_size_max, const char *key_file,
-		  int timeout, int verify,
+		  size_t keyfile_offset, size_t keyfile_size_max,
+		  const char *key_file, int timeout, int verify,
 		  struct crypt_device *cd)
 {
 	int fd, regular_file, read_stdin, char_read, unlimited_read = 0;
