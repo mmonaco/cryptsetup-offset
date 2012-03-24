@@ -765,8 +765,8 @@ static void AddDevicePlain(void)
 	// now with keyfile
 	OK_(_prepare_keyfile(KEYFILE1, KEY1, strlen(KEY1)));
 	OK_(_prepare_keyfile(KEYFILE2, KEY2, strlen(KEY2)));
-	FAIL_(crypt_activate_by_keyfile(cd, NULL, CRYPT_ANY_SLOT, KEYFILE1, 0, 0), "cannot verify key with plain");
-	EQ_(0, crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0));
+	FAIL_(crypt_activate_by_keyfile(cd, NULL, CRYPT_ANY_SLOT, KEYFILE1, 0, 0, 0), "cannot verify key with plain");
+	EQ_(0, crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0, 0));
 	EQ_(crypt_status(cd, CDEVICE_1), CRYPT_ACTIVE);
 	OK_(crypt_deactivate(cd, CDEVICE_1));
 	_remove_keyfiles();
@@ -1075,9 +1075,9 @@ static void AddDeviceLuks(void)
 	OK_(_prepare_keyfile(KEYFILE1, KEY1, strlen(KEY1)));
 	OK_(_prepare_keyfile(KEYFILE2, KEY2, strlen(KEY2)));
 	EQ_(2, crypt_keyslot_add_by_keyfile(cd, 2, KEYFILE1, 0, KEYFILE2, 0));
-	FAIL_(crypt_activate_by_keyfile(cd, CDEVICE_2, CRYPT_ANY_SLOT, KEYFILE2, strlen(KEY2)-1, 0), "key mismatch");
-	EQ_(2, crypt_activate_by_keyfile(cd, NULL, CRYPT_ANY_SLOT, KEYFILE2, 0, 0));
-	EQ_(2, crypt_activate_by_keyfile(cd, CDEVICE_2, CRYPT_ANY_SLOT, KEYFILE2, 0, 0));
+	FAIL_(crypt_activate_by_keyfile(cd, CDEVICE_2, CRYPT_ANY_SLOT, KEYFILE2, 0, strlen(KEY2)-1, 0), "key mismatch");
+	EQ_(2, crypt_activate_by_keyfile(cd, NULL, CRYPT_ANY_SLOT, KEYFILE2, 0, 0, 0));
+	EQ_(2, crypt_activate_by_keyfile(cd, CDEVICE_2, CRYPT_ANY_SLOT, KEYFILE2, 0, 0, 0));
 	OK_(crypt_keyslot_destroy(cd, 1));
 	OK_(crypt_keyslot_destroy(cd, 2));
 	OK_(crypt_deactivate(cd, CDEVICE_2));
@@ -1466,7 +1466,7 @@ static void HashDevicePlain(void)
 
 	// hash PLAIN, short key
 	OK_(_prepare_keyfile(KEYFILE1, "tooshort", 8));
-	FAIL_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 16, 0), "not enough data in keyfile");
+	FAIL_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 16, 0), "not enough data in keyfile");
 	_remove_keyfiles();
 
 	// hash PLAIN, exact key
@@ -1475,14 +1475,14 @@ static void HashDevicePlain(void)
 	key_size = 16;
 	crypt_decode_key(key, mk_hex, key_size);
 	OK_(_prepare_keyfile(KEYFILE1, key, key_size));
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, key_size, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, key_size, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	OK_(strcmp(key, mk_hex));
 	OK_(crypt_deactivate(cd, CDEVICE_1));
 
 	// Limit plain key
 	mk_hex = "caffeecaffeecaffeecaffeeca000000";
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, key_size - 3, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, key_size - 3, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	OK_(strcmp(key, mk_hex));
 	OK_(crypt_deactivate(cd, CDEVICE_1));
@@ -1495,7 +1495,7 @@ static void HashDevicePlain(void)
 	key_size = 16;
 	crypt_decode_key(key, mk_hex, key_size);
 	OK_(_prepare_keyfile(KEYFILE1, key, strlen(mk_hex) / 2));
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, key_size, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, key_size, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	FAIL_(strcmp(key, mk_hex), "only key length used");
 	OK_(strncmp(key, mk_hex, key_size));
@@ -1503,7 +1503,7 @@ static void HashDevicePlain(void)
 
 
 	// Now without explicit limit
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	FAIL_(strcmp(key, mk_hex), "only key length used");
 	OK_(strncmp(key, mk_hex, key_size));
@@ -1522,13 +1522,13 @@ static void HashDevicePlain(void)
 	keystr = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 	key_size = strlen(keystr); // 32
 	OK_(_prepare_keyfile(KEYFILE1, keystr, strlen(keystr)));
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, key_size, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, key_size, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	OK_(strcmp(key, mk_hex));
 	OK_(crypt_deactivate(cd, CDEVICE_1));
 
 	// Read full keyfile
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	OK_(strcmp(key, mk_hex));
 	OK_(crypt_deactivate(cd, CDEVICE_1));
@@ -1538,13 +1538,13 @@ static void HashDevicePlain(void)
 	// Limit keyfile read
 	keystr = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxAAAAAAAA";
 	OK_(_prepare_keyfile(KEYFILE1, keystr, strlen(keystr)));
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, key_size, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, key_size, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	OK_(strcmp(key, mk_hex));
 	OK_(crypt_deactivate(cd, CDEVICE_1));
 
 	// Full keyfile
-	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0));
+	OK_(crypt_activate_by_keyfile(cd, CDEVICE_1, CRYPT_ANY_SLOT, KEYFILE1, 0, 0, 0));
 	OK_(_get_key_dm(CDEVICE_1, key, sizeof(key)));
 	OK_(strcmp(key, "0e49cb34a1dee1df33f6505e4de44a66"));
 	OK_(crypt_deactivate(cd, CDEVICE_1));

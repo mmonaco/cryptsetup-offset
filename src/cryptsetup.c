@@ -297,9 +297,9 @@ static int action_create(int arg __attribute__((unused)))
 	if (opt_key_file && strcmp(opt_key_file, "-"))
 		params.hash = NULL;
 
-	if (opt_keyfile_size && opt_key_file)
-		log_std(("Ignoring keyfile size option, keyfile read size "
-			 "is always the same as encryption key size.\n"));
+	if ((opt_keyfile_offset || opt_keyfile_size) && opt_key_file)
+		log_std(("Ignoring keyfile offset and size options, keyfile read "
+			 "size is always the same as encryption key size.\n"));
 
 	r = crypt_parse_name_and_mode(opt_cipher ?: DEFAULT_CIPHER(PLAIN),
 				      cipher, NULL, cipher_mode);
@@ -334,7 +334,7 @@ static int action_create(int arg __attribute__((unused)))
 	if (opt_key_file)
 		/* With hashing, read the whole keyfile */
 		r = crypt_activate_by_keyfile(cd, action_argv[0],
-			CRYPT_ANY_SLOT, opt_key_file, params.hash ? 0 : key_size,
+			CRYPT_ANY_SLOT, opt_key_file, 0, params.hash ? 0 : key_size,
 			activate_flags);
 	else {
 		r = crypt_get_key(_("Enter passphrase: "),
@@ -388,7 +388,8 @@ static int action_loopaesOpen(int arg __attribute__((unused)))
 		goto out;
 
 	r = crypt_activate_by_keyfile(cd, action_argv[1], CRYPT_ANY_SLOT,
-				      opt_key_file, opt_keyfile_size, activate_flags);
+				      opt_key_file, opt_keyfile_offset,
+				      opt_keyfile_size, activate_flags);
 out:
 	crypt_free(cd);
 
@@ -649,8 +650,8 @@ static int action_luksOpen(int arg __attribute__((unused)))
 	} else if (opt_key_file) {
 		crypt_set_password_retry(cd, 1);
 		r = crypt_activate_by_keyfile(cd, action_argv[1],
-			opt_key_slot, opt_key_file, opt_keyfile_size,
-			flags);
+			opt_key_slot, opt_key_file, opt_keyfile_offset,
+			opt_keyfile_size, flags);
 	} else
 		r = crypt_activate_by_passphrase(cd, action_argv[1],
 			opt_key_slot, NULL, 0, flags);
