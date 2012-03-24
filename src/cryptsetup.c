@@ -50,6 +50,8 @@ static const char *opt_header_device = NULL;
 static int opt_key_size = 0;
 static long opt_keyfile_size = 0;
 static long opt_new_keyfile_size = 0;
+static long opt_keyfile_offset = 0;
+static long opt_new_keyfile_offset = 0;
 static int opt_key_slot = CRYPT_ANY_SLOT;
 static uint64_t opt_size = 0;
 static uint64_t opt_offset = 0;
@@ -1248,6 +1250,8 @@ int main(int argc, const char **argv)
 		{ "key-size",          's',  POPT_ARG_INT, &opt_key_size,               0, N_("The size of the encryption key"), N_("BITS") },
 		{ "keyfile-size",      'l',  POPT_ARG_LONG, &opt_keyfile_size,          0, N_("Limits the read from keyfile"), N_("bytes") },
 		{ "new-keyfile-size", '\0',  POPT_ARG_LONG, &opt_new_keyfile_size,      0, N_("Limits the read from newly added keyfile"), N_("bytes") },
+		{ "keyfile-offset",   '\0',  POPT_ARG_LONG, &opt_keyfile_offset,        0, N_("Offsets the read from keyfile"), N_("bytes") },
+		{ "new-keyfile-offset",'\0', POPT_ARG_LONG, &opt_new_keyfile_offset,    0, N_("Offsets the read from newly added keyfile"), N_("bytes") },
 		{ "key-slot",          'S',  POPT_ARG_INT, &opt_key_slot,               0, N_("Slot number for new key (default is first free)"), NULL },
 		{ "size",              'b',  POPT_ARG_STRING, &popt_tmp,                1, N_("The size of the device"), N_("SECTORS") },
 		{ "offset",            'o',  POPT_ARG_STRING, &popt_tmp,                2, N_("The start offset in the backend device"), N_("SECTORS") },
