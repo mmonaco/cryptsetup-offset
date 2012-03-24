@@ -263,7 +263,7 @@ int crypt_get_key(const char *prompt,
 {
 	int fd, regular_file, read_stdin, char_read, unlimited_read = 0;
 	int r = -EINVAL;
-	char *pass = NULL;
+	char *pass = NULL, offset;
 	size_t buflen, i;
 	struct stat st;
 
@@ -291,6 +291,14 @@ int crypt_get_key(const char *prompt,
 	if (fd < 0) {
 		log_err(cd, _("Failed to open key file.\n"));
 		return -EINVAL;
+	}
+
+	/* burn keyfile_offset bytes */
+	for (i = 0; i < keyfile_offset; i++) {
+		if (read(fd, &offset, 1) != 1) {
+			log_err(cd, _("Failed to offset key file.\n"));
+			goto out_err;
+		}
 	}
 
 	/* use 4k for buffer (page divisor but avoid huge pages) */
